@@ -4,10 +4,39 @@ Operations: whitespace normalization, null standardization, case normalization,
             deduplication, type inference, IQR-based outlier detection, profiling.
 """
 
+import hashlib
+import math
 import re
 import statistics
 from collections import defaultdict
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
+
+
+class BloomFilter:
+    """
+    Memory-efficient probabilistic dedup set.
+    Uses ~9.6 bits/element at 1% false-positive rate vs ~200 bytes/element for a Python set.
+    False positive = a unique row is wrongly treated as a duplicate (rare, configurable).
+    False negative = impossible (a true duplicate is never missed).
+    """
+
+    def __init__(self, capacity: int = 10_000_000, error_rate: float = 0.01):
+        m = max(1, int(-capacity * math.log(error_rate) / (math.log(2) ** 2)))
+        self.k = max(1, int(m / capacity * math.log(2)))
+        self.m = m
+        self.bits = bytearray((m + 7) // 8)
+        self.mem_mb = round(len(self.bits) / (1024 * 1024), 1)
+
+    def add(self, key: bytes) -> bool:
+        """Add key. Returns True if key was new, False if probably already seen."""
+        digest = hashlib.sha256(key).digest()
+        h1 = int.from_bytes(digest[:8],  "little")
+        h2 = int.from_bytes(digest[8:16], "little") | 1
+        positions = [(h1 + i * h2) % self.m for i in range(self.k)]
+        is_new = not all((self.bits[p >> 3] >> (p & 7)) & 1 for p in positions)
+        for p in positions:
+            self.bits[p >> 3] |= 1 << (p & 7)
+        return is_new
 
 
 _NULL_DEFAULTS = {
@@ -44,8 +73,10 @@ class DataCleaner:
         self.strip_chars = c.get("strip_chars", [";"])
         self.repair_merged = c.get("repair_merged_cells", True)
         self.remove_duplicates = c.get("remove_duplicates", True)
-        self.duplicate_subset = c.get("duplicate_subset")  # list of col names, or None = all cols
-        self.outlier_enabled = c.get("outlier_detection", True)
+        self.duplicate_subset  = c.get("duplicate_subset")
+        self.bloom_capacity    = int(c.get("bloom_capacity",   10_000_000))
+        self.bloom_error_rate  = float(c.get("bloom_error_rate", 0.01))
+        self.outlier_enabled   = c.get("outlier_detection", True)
         self.outlier_multiplier = float(c.get("outlier_iqr_multiplier", 1.5))
         self.outlier_action = c.get("outlier_action", "flag")  # flag | remove | cap
         self.report_enabled = c.get("report", True)
@@ -57,7 +88,8 @@ class DataCleaner:
         self._s_header = header
         self._s_n_cols = n_cols
         self._s_col_names = header[:] if header else [f"col_{i}" for i in range(n_cols)]
-        self._s_seen: set = set()
+        # Bloom filter for dedup — fixed ~11 MB for 10M rows vs ~2 GB with a plain set
+        self._s_seen: BloomFilter = BloomFilter(self.bloom_capacity, self.bloom_error_rate)
         self._s_col_types: List[str] = ["unknown"] * n_cols
         self._s_reservoir: List[List[float]] = [[] for _ in range(n_cols)]
         self._s_reservoir_max = 50_000          # samples per column for IQR estimate
@@ -109,7 +141,7 @@ class DataCleaner:
             new_row.append(self.null_replacement)
         new_row = new_row[:n]
 
-        # deduplication using hash (memory-efficient)
+        # deduplication via Bloom filter — O(1) memory regardless of file size
         if self.remove_duplicates:
             col_names = self._s_col_names
             if self.duplicate_subset:
@@ -118,11 +150,10 @@ class DataCleaner:
                     idx = list(range(n))
             else:
                 idx = list(range(n))
-            key = hash(tuple(new_row[i] for i in idx if i < len(new_row)))
-            if key in self._s_seen:
+            key = "|".join(new_row[i] for i in idx if i < len(new_row)).encode()
+            if not self._s_seen.add(key):
                 self._s_stats["duplicates_removed"] += 1
                 return None
-            self._s_seen.add(key)
 
         # update type inference + reservoir for IQR
         for i, val in enumerate(new_row):

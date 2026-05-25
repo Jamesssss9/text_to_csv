@@ -1,0 +1,14 @@
+2026-05-25 16:21:33,510  INFO      text-csv cleaner — starting
+2026-05-25 16:21:33,510  INFO      Config : C:\Users\hkawn\OneDrive\Desktop\text.csv\text-csv\config\config.json
+2026-05-25 16:21:33,510  INFO      Files to clean : 1
+2026-05-25 16:21:33,510  INFO      Cleaning : 100.csv  ->  100.csv
+2026-05-25 16:21:33,514  INFO        Rows :     78 in  ->      78 out
+2026-05-25 16:21:33,514  INFO        Dupes removed : 0  |  Nulls replaced : 2  |  Whitespace stripped : 0
+2026-05-25 16:21:33,514  INFO        Outliers flagged : 0  |  Outliers removed : 0  |  Elapsed : 0.003s
+2026-05-25 16:21:33,514  INFO        Column profiles:
+2026-05-25 16:21:33,514  INFO          [John]  string   unique=78  nulls=0(0.0%)
+2026-05-25 16:21:33,514  INFO          [23]  numeric  min=20.0  max=25.0  mean=22.6753  std=1.3807  nulls=1(1.28%)
+2026-05-25 16:21:33,514  INFO          [Bangkok]  string   unique=7  nulls=1(1.28%)
+2026-05-25 16:21:33,515  INFO        Report saved : 100_clean_report.json
+2026-05-25 16:21:33,516  INFO      ============================================================
+2026-05-25 16:21:33,516  INFO      Completed : 1 / 1 files cleaned successfully

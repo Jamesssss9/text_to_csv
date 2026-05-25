@@ -13,6 +13,7 @@ import argparse
 import csv
 import json
 import logging
+import math
 import os
 import sys
 import tempfile
@@ -64,7 +65,10 @@ def clean_file(
 ) -> dict:
     size_mb = src.stat().st_size / (1024 * 1024)
     if size_mb > STREAM_THRESHOLD_MB:
-        log.info(f"  Large file ({size_mb:.0f} MB) — using streaming mode")
+        bloom_mb = round(-cleaner.bloom_capacity * math.log(cleaner.bloom_error_rate)
+                         / (math.log(2) ** 2) / 8 / 1024 / 1024, 1)
+        log.info(f"  Large file ({size_mb:.0f} MB) — streaming mode  "
+                 f"| Bloom filter dedup: {bloom_mb} MB RAM")
         return _clean_streaming(src, dst, cleaner, has_header)
     return _clean_inmemory(src, dst, cleaner, has_header)
 
