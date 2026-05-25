@@ -1,5 +1,5 @@
 {
-  "total_rows_in": 93,
+  "total_rows_in": 78,
   "total_rows_out": 78,
   "columns": 3,
   "column_names": [
@@ -8,7 +8,7 @@
     "Bangkok"
   ],
   "whitespace_stripped": 0,
-  "nulls_replaced": 3,
+  "nulls_replaced": 2,
   "duplicates_removed": 0,
   "outliers_flagged": 0,
   "outliers_removed": 0,
@@ -39,7 +39,7 @@
       "unique_count": 7
     }
   },
-  "elapsed": 0.004,
-  "src": "C:\\Users\\hkawn\\OneDrive\\Desktop\\text.csv\\text-csv\\output\\100.csv",
+  "elapsed": 0.002,
+  "src": "output_clean\\100.csv",
   "dst": "C:\\Users\\hkawn\\OneDrive\\Desktop\\text.csv\\text-csv\\output_clean\\100.csv"
 }

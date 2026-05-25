@@ -16,6 +16,14 @@ _NULL_DEFAULTS = {
 }
 
 
+def _is_outside(val: str, bound: Tuple[float, float]) -> bool:
+    try:
+        f = float(val)
+        return f < bound[0] or f > bound[1]
+    except ValueError:
+        return False
+
+
 def _percentile(sorted_data: List[float], pct: float) -> float:
     if not sorted_data:
         return 0.0
@@ -41,6 +49,144 @@ class DataCleaner:
         self.outlier_multiplier = float(c.get("outlier_iqr_multiplier", 1.5))
         self.outlier_action = c.get("outlier_action", "flag")  # flag | remove | cap
         self.report_enabled = c.get("report", True)
+
+    # ── Streaming API (for large files) ──────────────────────────────────────
+
+    def init_streaming(self, header: Optional[List[str]], n_cols: int):
+        """Call once before streaming rows through process_row()."""
+        self._s_header = header
+        self._s_n_cols = n_cols
+        self._s_col_names = header[:] if header else [f"col_{i}" for i in range(n_cols)]
+        self._s_seen: set = set()
+        self._s_col_types: List[str] = ["unknown"] * n_cols
+        self._s_reservoir: List[List[float]] = [[] for _ in range(n_cols)]
+        self._s_reservoir_max = 50_000          # samples per column for IQR estimate
+        self._s_stats = {
+            "rows_in": 0, "rows_out": 0,
+            "duplicates_removed": 0, "nulls_replaced": 0,
+            "whitespace_stripped": 0, "outliers_flagged": 0, "outliers_removed": 0,
+        }
+
+    def process_row(self, row: List[str]) -> Optional[List[str]]:
+        """Clean + repair + dedup a single row. Returns cleaned row or None."""
+        self._s_stats["rows_in"] += 1
+        n = self._s_n_cols
+
+        # cell-level cleaning
+        new_row: List[str] = []
+        for val in row:
+            original = val
+            if self.strip_ws:
+                val = val.strip()
+                if val != original:
+                    self._s_stats["whitespace_stripped"] += 1
+            if self.strip_chars:
+                val = re.sub('[' + re.escape(''.join(self.strip_chars)) + ']', '', val).strip()
+            if val.lower() in self.null_values:
+                val = self.null_replacement
+                self._s_stats["nulls_replaced"] += 1
+            elif val and self.normalize_case:
+                if self.normalize_case == "lower":
+                    val = val.lower()
+                elif self.normalize_case == "upper":
+                    val = val.upper()
+                elif self.normalize_case == "title":
+                    val = val.title()
+            new_row.append(val)
+
+        # strip trailing empty
+        while new_row and new_row[-1] == self.null_replacement:
+            new_row.pop()
+
+        # repair merged cells
+        if self.repair_merged:
+            new_row = self._repair_row(new_row, n)
+            if new_row is None:
+                return None
+
+        # align to n_cols
+        while len(new_row) < n:
+            new_row.append(self.null_replacement)
+        new_row = new_row[:n]
+
+        # deduplication using hash (memory-efficient)
+        if self.remove_duplicates:
+            col_names = self._s_col_names
+            if self.duplicate_subset:
+                idx = [col_names.index(c) for c in self.duplicate_subset if c in col_names]
+                if not idx:
+                    idx = list(range(n))
+            else:
+                idx = list(range(n))
+            key = hash(tuple(new_row[i] for i in idx if i < len(new_row)))
+            if key in self._s_seen:
+                self._s_stats["duplicates_removed"] += 1
+                return None
+            self._s_seen.add(key)
+
+        # update type inference + reservoir for IQR
+        for i, val in enumerate(new_row):
+            if i >= n:
+                break
+            if self._s_col_types[i] == "string" or not val:
+                continue
+            try:
+                fval = float(val)
+                if self._s_col_types[i] == "unknown":
+                    self._s_col_types[i] = "numeric"
+                if len(self._s_reservoir[i]) < self._s_reservoir_max:
+                    self._s_reservoir[i].append(fval)
+            except ValueError:
+                self._s_col_types[i] = "string"
+
+        self._s_stats["rows_out"] += 1
+        return new_row
+
+    def compute_streaming_bounds(self) -> List[Optional[Tuple[float, float]]]:
+        """Compute IQR outlier bounds from reservoir samples collected during process_row()."""
+        bounds: List[Optional[Tuple[float, float]]] = []
+        for i, col_type in enumerate(self._s_col_types):
+            if col_type == "numeric" and self._s_reservoir[i]:
+                vals = sorted(self._s_reservoir[i])
+                q1 = _percentile(vals, 0.25)
+                q3 = _percentile(vals, 0.75)
+                iqr = q3 - q1
+                bounds.append((q1 - self.outlier_multiplier * iqr,
+                                q3 + self.outlier_multiplier * iqr))
+            else:
+                bounds.append(None)
+        return bounds
+
+    def apply_outlier_row(
+        self, row: List[str], bounds: List[Optional[Tuple[float, float]]]
+    ) -> Optional[List[str]]:
+        """Apply outlier action to a single row. Returns row (possibly modified) or None."""
+        is_outlier = any(
+            bound is not None and i < len(row) and _is_outside(row[i], bound)
+            for i, bound in enumerate(bounds)
+        )
+        if is_outlier:
+            if self.outlier_action == "remove":
+                self._s_stats["outliers_removed"] += 1
+                return None
+            elif self.outlier_action == "flag":
+                self._s_stats["outliers_flagged"] += 1
+                return row + ["1"]
+            elif self.outlier_action == "cap":
+                row = list(row)
+                for i, bound in enumerate(bounds):
+                    if bound is None or i >= len(row):
+                        continue
+                    try:
+                        row[i] = str(round(max(bound[0], min(bound[1], float(row[i]))), 6))
+                    except ValueError:
+                        pass
+                return row
+        if self.outlier_action == "flag":
+            return row + ["0"]
+        return row
+
+    # ── Row repair ────────────────────────────────────────────────────────────
 
     def _repair_row(self, row: List[str], n_cols: int) -> Optional[List[str]]:
         non_empty = [v for v in row if v]

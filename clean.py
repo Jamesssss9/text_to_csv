@@ -13,7 +13,9 @@ import argparse
 import csv
 import json
 import logging
+import os
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -50,6 +52,9 @@ def _dst_path(src: Path, output_dir: Path, in_place: bool) -> Path:
     return output_dir / src.name
 
 
+STREAM_THRESHOLD_MB = 50   # files larger than this use streaming (no full RAM load)
+
+
 def clean_file(
     src: Path,
     dst: Path,
@@ -57,38 +62,120 @@ def clean_file(
     has_header: bool,
     log: logging.Logger,
 ) -> dict:
+    size_mb = src.stat().st_size / (1024 * 1024)
+    if size_mb > STREAM_THRESHOLD_MB:
+        log.info(f"  Large file ({size_mb:.0f} MB) — using streaming mode")
+        return _clean_streaming(src, dst, cleaner, has_header)
+    return _clean_inmemory(src, dst, cleaner, has_header)
+
+
+def _clean_inmemory(src, dst, cleaner, has_header):
     t0 = time.perf_counter()
     try:
         with open(src, newline="", encoding="utf-8") as f:
-            reader = csv.reader(f)
-            all_rows = list(reader)
-
+            all_rows = list(csv.reader(f))
         if not all_rows:
             return {"error": "empty file", "elapsed": 0.0}
-
-        if has_header:
-            header = all_rows[0]
-            rows = all_rows[1:]
-        else:
-            header = None
-            rows = all_rows
-
+        header = all_rows[0] if has_header else None
+        rows   = all_rows[1:] if has_header else all_rows
         final_header, cleaned_rows, report = cleaner.clean(header, rows)
-
         dst.parent.mkdir(parents=True, exist_ok=True)
         with open(dst, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             if final_header is not None:
                 writer.writerow(final_header)
             writer.writerows(cleaned_rows)
-
     except Exception as exc:
         return {"error": str(exc), "elapsed": round(time.perf_counter() - t0, 3)}
-
     report["elapsed"] = round(time.perf_counter() - t0, 3)
     report["src"] = str(src)
     report["dst"] = str(dst)
     return report
+
+
+def _clean_streaming(src, dst, cleaner, has_header):
+    """Two-pass streaming cleaner for large files — constant memory usage."""
+    t0 = time.perf_counter()
+    try:
+        # ── Read header ───────────────────────────────────────────────────────
+        with open(src, newline="", encoding="utf-8") as f:
+            first = next(csv.reader(f), None)
+        if first is None:
+            return {"error": "empty file", "elapsed": 0.0}
+
+        if has_header:
+            header = list(first)
+            while header and header[-1].strip() == "":
+                header.pop()
+            n_cols = len(header)
+        else:
+            header = None
+            n_cols = len(first)
+
+        cleaner.init_streaming(header, n_cols)
+
+        # ── Pass 1: clean + dedup → temp file ────────────────────────────────
+        tmp_fd, tmp_path = tempfile.mkstemp(suffix=".csv", prefix="textcsv_clean_")
+        os.close(tmp_fd)
+
+        with open(src, newline="", encoding="utf-8") as fin, \
+             open(tmp_path, "w", newline="", encoding="utf-8") as ftmp:
+            reader = csv.reader(fin)
+            writer = csv.writer(ftmp)
+            if has_header:
+                next(reader)          # skip header row
+            for row in reader:
+                cleaned = cleaner.process_row(row)
+                if cleaned is not None:
+                    writer.writerow(cleaned)
+
+        s = cleaner._s_stats
+
+        # ── Pass 2: outlier filter → final output ─────────────────────────────
+        bounds = cleaner.compute_streaming_bounds() if cleaner.outlier_enabled else None
+        add_outlier_col = (cleaner.outlier_enabled and cleaner.outlier_action == "flag")
+        final_header = (header + ["_outlier"]) if (header and add_outlier_col) else header
+
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        rows_out = 0
+        with open(tmp_path, newline="", encoding="utf-8") as ftmp, \
+             open(dst, "w", newline="", encoding="utf-8") as fout:
+            reader = csv.reader(ftmp)
+            writer = csv.writer(fout)
+            if final_header:
+                writer.writerow(final_header)
+            for row in reader:
+                if bounds:
+                    row = cleaner.apply_outlier_row(row, bounds)
+                    if row is None:
+                        continue
+                elif add_outlier_col:
+                    row = row + ["0"]
+                writer.writerow(row)
+                rows_out += 1
+
+        os.unlink(tmp_path)
+
+    except Exception as exc:
+        if "tmp_path" in dir() and os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+        return {"error": str(exc), "elapsed": round(time.perf_counter() - t0, 3)}
+
+    return {
+        "total_rows_in":      s["rows_in"],
+        "total_rows_out":     rows_out,
+        "columns":            n_cols,
+        "column_names":       header or [f"col_{i}" for i in range(n_cols)],
+        "whitespace_stripped": s["whitespace_stripped"],
+        "nulls_replaced":     s["nulls_replaced"],
+        "duplicates_removed": s["duplicates_removed"],
+        "outliers_flagged":   s["outliers_flagged"],
+        "outliers_removed":   s["outliers_removed"],
+        "column_profiles":    {},
+        "elapsed":            round(time.perf_counter() - t0, 3),
+        "src":                str(src),
+        "dst":                str(dst),
+    }
 
 
 def _log_report(report: dict, log: logging.Logger):
