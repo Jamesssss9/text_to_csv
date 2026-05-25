@@ -20,6 +20,8 @@ import tempfile
 import time
 from pathlib import Path
 
+csv.field_size_limit(sys.maxsize)   # remove 128 KB cell limit
+
 from src.cleaner import DataCleaner
 
 

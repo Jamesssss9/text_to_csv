@@ -7,9 +7,12 @@ import csv
 import gzip
 import io
 import os
+import sys
 import time
 from pathlib import Path
 from typing import Optional
+
+csv.field_size_limit(sys.maxsize)   # remove 128 KB cell limit
 
 from src.parser import TextParser
 
