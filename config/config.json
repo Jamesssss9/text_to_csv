@@ -1,13 +1,14 @@
 {
   "input_dir": "input",
   "output_dir": "output",
+  "clean_output_dir": "output_clean",
   "log_dir": "logs",
   "checkpoint_dir": "checkpoints",
 
   "workers": 0,
 
   "parsing": {
-    "mode": "auto",
+    "mode": "smart",
     "delimiter": null,
     "fixed_widths": null,
     "skip_blank_lines": true,
@@ -41,14 +42,17 @@
 
   "cleaning": {
     "strip_whitespace": true,
-    "normalize_case": null,
+    "strip_chars": [";", "|"],
+    "repair_merged_cells": true,
+    "normalize_case": "lower",
     "null_values": ["", "null", "none", "n/a", "na", "-", "nan", "nil",
                     "NULL", "N/A", "None", "NaN", "NA", "missing"],
     "null_replacement": "",
     "remove_duplicates": true,
-    "outlier_detection": true,
+    "duplicate_subset": ["col_0"],
+    "outlier_detection": false,
     "outlier_iqr_multiplier": 1.5,
-    "outlier_action": "flag",
+    "outlier_action": "remove",
     "report": true
   }
 }

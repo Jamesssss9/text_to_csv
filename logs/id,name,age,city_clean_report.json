@@ -1,0 +1,59 @@
+{
+  "total_rows_in": 7,
+  "total_rows_out": 7,
+  "columns": 4,
+  "column_names": [
+    "id",
+    "name",
+    "age",
+    "city"
+  ],
+  "whitespace_stripped": 0,
+  "nulls_replaced": 0,
+  "duplicates_removed": 0,
+  "outliers_flagged": 0,
+  "outliers_removed": 0,
+  "column_profiles": {
+    "id": {
+      "type": "numeric",
+      "null_count": 0,
+      "null_pct": 0.0,
+      "unique_count": 7,
+      "min": 1.0,
+      "max": 7.0,
+      "mean": 4.0,
+      "median": 4.0,
+      "std": 2.1602,
+      "q1": 2.5,
+      "q3": 5.5
+    },
+    "name": {
+      "type": "string",
+      "null_count": 0,
+      "null_pct": 0.0,
+      "unique_count": 4
+    },
+    "age": {
+      "type": "numeric",
+      "null_count": 0,
+      "null_pct": 0.0,
+      "unique_count": 4,
+      "min": 21.0,
+      "max": 25.0,
+      "mean": 22.5714,
+      "median": 23.0,
+      "std": 1.3973,
+      "q1": 21.5,
+      "q3": 23.0
+    },
+    "city": {
+      "type": "string",
+      "null_count": 0,
+      "null_pct": 0.0,
+      "unique_count": 3
+    }
+  },
+  "elapsed": 0.002,
+  "src": "C:\\Users\\hkawn\\OneDrive\\Desktop\\text.csv\\text-csv\\output\\id,name,age,city.csv",
+  "dst": "C:\\Users\\hkawn\\OneDrive\\Desktop\\text.csv\\text-csv\\output_clean\\id,name,age,city.csv"
+}

@@ -1,4 +1,0 @@
-1,John,20,Thailand
-2,Sara,22,USA
-3,Ali,25,UK
-4,Mina,21,Japan

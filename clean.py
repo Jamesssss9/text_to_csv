@@ -47,8 +47,7 @@ def setup_logging(log_dir: Path) -> logging.Logger:
 def _dst_path(src: Path, output_dir: Path, in_place: bool) -> Path:
     if in_place:
         return src
-    stem = src.stem + "_clean"
-    return output_dir / (stem + src.suffix)
+    return output_dir / src.name
 
 
 def clean_file(
@@ -158,12 +157,12 @@ def main():
 
     if input_path.is_file():
         csv_files = [input_path]
-        default_out = input_path.parent
+        default_out = BASE_DIR / cfg.get("clean_output_dir", "output_clean")
     else:
         csv_files = sorted(input_path.glob("**/*.csv"))
         if not args.in_place:
             csv_files = [f for f in csv_files if not f.stem.endswith("_clean")]
-        default_out = input_path
+        default_out = BASE_DIR / cfg.get("clean_output_dir", "output_clean")
 
     output_dir = Path(args.output_dir) if args.output_dir else default_out
 

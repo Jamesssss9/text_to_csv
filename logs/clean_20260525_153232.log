@@ -1,0 +1,14 @@
+2026-05-25 15:32:32,455  INFO      text-csv cleaner — starting
+2026-05-25 15:32:32,456  INFO      Config : C:\Users\hkawn\OneDrive\Desktop\text.csv\text-csv\config\config.json
+2026-05-25 15:32:32,456  INFO      Files to clean : 1
+2026-05-25 15:32:32,456  INFO      Cleaning : trailing_test.csv  ->  trailing_test.csv
+2026-05-25 15:32:32,457  INFO        Rows :      3 in  ->       3 out
+2026-05-25 15:32:32,457  INFO        Dupes removed : 0  |  Nulls replaced : 6  |  Whitespace stripped : 0
+2026-05-25 15:32:32,457  INFO        Outliers flagged : 0  |  Outliers removed : 0  |  Elapsed : 0.001s
+2026-05-25 15:32:32,458  INFO        Column profiles:
+2026-05-25 15:32:32,458  INFO          [name]  string   unique=3  nulls=0(0.0%)
+2026-05-25 15:32:32,458  INFO          [age]  numeric  min=21.0  max=25.0  mean=23.3333  std=2.0817  nulls=0(0.0%)
+2026-05-25 15:32:32,458  INFO          [city]  string   unique=3  nulls=0(0.0%)
+2026-05-25 15:32:32,460  INFO        Report saved : trailing_test_clean_report.json
+2026-05-25 15:32:32,460  INFO      ============================================================
+2026-05-25 15:32:32,460  INFO      Completed : 1 / 1 files cleaned successfully

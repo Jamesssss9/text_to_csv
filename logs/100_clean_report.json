@@ -1,0 +1,45 @@
+{
+  "total_rows_in": 93,
+  "total_rows_out": 78,
+  "columns": 3,
+  "column_names": [
+    "John",
+    "23",
+    "Bangkok"
+  ],
+  "whitespace_stripped": 0,
+  "nulls_replaced": 3,
+  "duplicates_removed": 0,
+  "outliers_flagged": 0,
+  "outliers_removed": 0,
+  "column_profiles": {
+    "John": {
+      "type": "string",
+      "null_count": 0,
+      "null_pct": 0.0,
+      "unique_count": 78
+    },
+    "23": {
+      "type": "numeric",
+      "null_count": 1,
+      "null_pct": 1.28,
+      "unique_count": 6,
+      "min": 20.0,
+      "max": 25.0,
+      "mean": 22.6753,
+      "median": 22.0,
+      "std": 1.3807,
+      "q1": 22.0,
+      "q3": 24.0
+    },
+    "Bangkok": {
+      "type": "string",
+      "null_count": 1,
+      "null_pct": 1.28,
+      "unique_count": 7
+    }
+  },
+  "elapsed": 0.003,
+  "src": "C:\\Users\\hkawn\\OneDrive\\Desktop\\text.csv\\text-csv\\output\\100.csv",
+  "dst": "C:\\Users\\hkawn\\OneDrive\\Desktop\\text.csv\\text-csv\\output_clean\\100.csv"
+}

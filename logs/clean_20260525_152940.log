@@ -1,0 +1,3 @@
+2026-05-25 15:29:40,843  INFO      text-csv cleaner — starting
+2026-05-25 15:29:40,843  INFO      Config : C:\Users\hkawn\OneDrive\Desktop\text.csv\text-csv\config\config.json
+2026-05-25 15:29:40,844  WARNING   No CSV files found in C:\Users\hkawn\OneDrive\Desktop\text.csv\text-csv\output

@@ -9,6 +9,39 @@ import io
 from typing import Iterator, List, Optional
 
 
+def smart_parse_line(line: str) -> List[str]:
+    """
+    Extract values from a single line regardless of its format.
+    Handles: key:value, key=value, pipe-delimited, CSV, whitespace.
+    """
+    stripped = line.strip()
+    if not stripped:
+        return []
+
+    # key:value  e.g. "Name: John   Age: 23   City: Bangkok"
+    if re.search(r'\b\w+\s*:\s*\S', stripped):
+        values = re.findall(r'\b\w+\s*:\s*(.+?)(?=\s{2,}\w+\s*:|\s*$)', stripped)
+        if values:
+            return [v.strip().rstrip(',') for v in values if v.strip()]
+
+    # key=value  e.g. "name=anna, age=21, city=chiang mai"
+    if re.search(r'\b\w+\s*=\s*\S', stripped):
+        values = re.findall(r'\b\w+\s*=\s*(.+?)(?=,\s*\w+\s*=|$)', stripped)
+        if values:
+            return [v.strip().rstrip(',') for v in values if v.strip()]
+
+    # pipe-delimited  e.g. "Peter | 22 | Phuket"
+    if '|' in stripped:
+        return [v.strip() for v in stripped.split('|') if v.strip()]
+
+    # comma-delimited  e.g. "JOHN,24,Bangkok"
+    if ',' in stripped:
+        return [v.strip() for v in next(csv.reader([stripped])) if v.strip()]
+
+    # whitespace-delimited  e.g. "  Sara   25    Bangkok"
+    return stripped.split()
+
+
 def detect_delimiter(sample_lines: List[str]) -> Optional[str]:
     """Sniff delimiter from sample lines using csv.Sniffer, fallback heuristics."""
     sample = "\n".join(sample_lines[:20])
@@ -104,12 +137,14 @@ class TextParser:
         """Parse a batch of raw lines into rows."""
         filtered = [l for l in (self._filter_line(ln) for ln in lines) if l is not None]
 
-        if not self._detected and self.mode == "auto" and filtered:
+        if not self._detected and self.mode == "auto" and self.mode != "smart" and filtered:
             self._auto_detect(filtered[:50])
             self._detected = True
 
         for line in filtered:
-            if self._effective_mode == "fixed_width":
+            if self._effective_mode == "smart":
+                yield smart_parse_line(line)
+            elif self._effective_mode == "fixed_width":
                 yield self._split_fixed(line)
             else:
                 yield self._split_delimited(line)

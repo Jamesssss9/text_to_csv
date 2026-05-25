@@ -1,0 +1,16 @@
+2026-05-25 15:30:22,431  INFO      text-csv  —  starting
+2026-05-25 15:30:22,431  INFO      Config: C:\Users\hkawn\OneDrive\Desktop\text.csv\text-csv\config\config.json
+2026-05-25 15:30:22,433  INFO      Found 3 files in C:\Users\hkawn\OneDrive\Desktop\text.csv\text-csv\input
+2026-05-25 15:30:22,433  INFO      Total size: 2.0 KB
+2026-05-25 15:30:22,434  INFO      Jobs to run: 2  (resume mode)
+2026-05-25 15:30:22,434  INFO      Workers: 2
+2026-05-25 15:30:22,565  INFO      [1/2] 100.txt  94 rows  1.7 KB  0.0s  611.3 KB/s
+2026-05-25 15:30:22,566  INFO        Progress: 50.0%  ETA: 0.0 min  Total read: 1.7 KB
+2026-05-25 15:30:22,568  INFO      [2/2] id,name,age,city.txt  8 rows  148.0 B  0.0s  80.3 KB/s
+2026-05-25 15:30:22,569  INFO        Progress: 100.0%  ETA: 0.0 min  Total read: 1.8 KB
+2026-05-25 15:30:22,573  INFO      ============================================================
+2026-05-25 15:30:22,574  INFO      Completed: 2 files
+2026-05-25 15:30:22,574  INFO      Total rows written: 102
+2026-05-25 15:30:22,574  INFO      Total data read:    1.8 KB
+2026-05-25 15:30:22,574  INFO      Total time:         0.0 min
+2026-05-25 15:30:22,574  INFO      Average speed:      13.0 KB/s

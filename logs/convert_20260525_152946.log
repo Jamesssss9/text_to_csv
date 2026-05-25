@@ -1,0 +1,4 @@
+2026-05-25 15:29:46,153  INFO      text-csv  —  starting
+2026-05-25 15:29:46,153  INFO      Config: C:\Users\hkawn\OneDrive\Desktop\text.csv\text-csv\config\config.json
+2026-05-25 15:29:46,155  INFO      Found 0 files in C:\Users\hkawn\OneDrive\Desktop\text.csv\text-csv\input
+2026-05-25 15:29:46,155  WARNING   No files found. Drop text files into the 'input' folder and re-run.

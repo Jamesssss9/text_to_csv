@@ -1,0 +1,4 @@
+2026-05-25 15:19:14,508  INFO      text-csv  —  starting
+2026-05-25 15:19:14,508  INFO      Config: C:\Users\hkawn\OneDrive\Desktop\text.csv\text-csv\config\config.json
+2026-05-25 15:19:14,509  INFO      Single file: input\mess.txt → C:\Users\hkawn\OneDrive\Desktop\text.csv\text-csv\output\mess.csv
+2026-05-25 15:19:14,515  INFO      Done: 0 rows  |  0.0 B  |  0.0s  |  ERROR: [Errno 2] No such file or directory: 'input\\mess.txt'
