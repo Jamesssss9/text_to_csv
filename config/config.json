@@ -1,0 +1,41 @@
+{
+  "input_dir": "input",
+  "output_dir": "output",
+  "log_dir": "logs",
+  "checkpoint_dir": "checkpoints",
+
+  "workers": 0,
+
+  "parsing": {
+    "mode": "auto",
+    "delimiter": null,
+    "fixed_widths": null,
+    "skip_blank_lines": true,
+    "skip_comment_lines": true,
+    "comment_prefix": "#",
+    "header_line": null,
+    "encoding": "utf-8",
+    "encoding_errors": "replace"
+  },
+
+  "output": {
+    "csv_delimiter": ",",
+    "quoting": "minimal",
+    "include_filename_column": false,
+    "include_linenumber_column": false,
+    "compress": false
+  },
+
+  "performance": {
+    "read_chunk_lines": 50000,
+    "write_buffer_lines": 10000,
+    "max_file_size_single_thread_mb": 100
+  },
+
+  "file_filter": {
+    "extensions": [".txt", ".log", ".dat", ".tsv", ".csv"],
+    "recursive": true,
+    "min_size_bytes": 0,
+    "max_size_bytes": null
+  }
+}
