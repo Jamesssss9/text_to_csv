@@ -1,0 +1,33 @@
+2026-05-25 15:53:11,203  INFO      text-csv cleaner — starting
+2026-05-25 15:53:11,203  INFO      Config : C:\Users\hkawn\OneDrive\Desktop\text.csv\text-csv\config\config.json
+2026-05-25 15:53:11,204  INFO      Files to clean : 3
+2026-05-25 15:53:11,204  INFO      Cleaning : 100.csv  ->  100.csv
+2026-05-25 15:53:11,208  INFO        Rows :     93 in  ->      78 out
+2026-05-25 15:53:11,208  INFO        Dupes removed : 0  |  Nulls replaced : 3  |  Whitespace stripped : 0
+2026-05-25 15:53:11,209  INFO        Outliers flagged : 0  |  Outliers removed : 0  |  Elapsed : 0.004s
+2026-05-25 15:53:11,210  INFO        Column profiles:
+2026-05-25 15:53:11,210  INFO          [John]  string   unique=78  nulls=0(0.0%)
+2026-05-25 15:53:11,210  INFO          [23]  numeric  min=20.0  max=25.0  mean=22.6753  std=1.3807  nulls=1(1.28%)
+2026-05-25 15:53:11,210  INFO          [Bangkok]  string   unique=7  nulls=1(1.28%)
+2026-05-25 15:53:11,211  INFO        Report saved : 100_clean_report.json
+2026-05-25 15:53:11,212  INFO      Cleaning : id,name,age,city.csv  ->  id,name,age,city.csv
+2026-05-25 15:53:11,213  INFO        Rows :      7 in  ->       7 out
+2026-05-25 15:53:11,213  INFO        Dupes removed : 0  |  Nulls replaced : 0  |  Whitespace stripped : 0
+2026-05-25 15:53:11,213  INFO        Outliers flagged : 0  |  Outliers removed : 0  |  Elapsed : 0.001s
+2026-05-25 15:53:11,213  INFO        Column profiles:
+2026-05-25 15:53:11,213  INFO          [id]  numeric  min=1.0  max=7.0  mean=4.0  std=2.1602  nulls=0(0.0%)
+2026-05-25 15:53:11,214  INFO          [name]  string   unique=4  nulls=0(0.0%)
+2026-05-25 15:53:11,214  INFO          [age]  numeric  min=21.0  max=25.0  mean=22.5714  std=1.3973  nulls=0(0.0%)
+2026-05-25 15:53:11,214  INFO          [city]  string   unique=3  nulls=0(0.0%)
+2026-05-25 15:53:11,215  INFO        Report saved : id,name,age,city_clean_report.json
+2026-05-25 15:53:11,215  INFO      Cleaning : mess.csv  ->  mess.csv
+2026-05-25 15:53:11,215  INFO        Rows :      4 in  ->       4 out
+2026-05-25 15:53:11,217  INFO        Dupes removed : 0  |  Nulls replaced : 0  |  Whitespace stripped : 0
+2026-05-25 15:53:11,217  INFO        Outliers flagged : 0  |  Outliers removed : 0  |  Elapsed : 0.001s
+2026-05-25 15:53:11,217  INFO        Column profiles:
+2026-05-25 15:53:11,217  INFO          [John]  string   unique=4  nulls=0(0.0%)
+2026-05-25 15:53:11,217  INFO          [23]  numeric  min=21.0  max=25.0  mean=23.0  std=1.8257  nulls=0(0.0%)
+2026-05-25 15:53:11,217  INFO          [Bangkok]  string   unique=3  nulls=0(0.0%)
+2026-05-25 15:53:11,218  INFO        Report saved : mess_clean_report.json
+2026-05-25 15:53:11,218  INFO      ============================================================
+2026-05-25 15:53:11,218  INFO      Completed : 3 / 3 files cleaned successfully

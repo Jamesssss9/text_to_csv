@@ -53,7 +53,7 @@
       "unique_count": 3
     }
   },
-  "elapsed": 0.002,
+  "elapsed": 0.001,
   "src": "C:\\Users\\hkawn\\OneDrive\\Desktop\\text.csv\\text-csv\\output\\id,name,age,city.csv",
   "dst": "C:\\Users\\hkawn\\OneDrive\\Desktop\\text.csv\\text-csv\\output_clean\\id,name,age,city.csv"
 }

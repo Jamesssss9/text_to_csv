@@ -1,0 +1,5 @@
+Name: John   Age:  23  City: Bangkok
+name=anna, age=21, city=chiang mai
+JOHN,24,Bangkok
+Peter | 22 | Phuket
+  Sara   25    Bangkok

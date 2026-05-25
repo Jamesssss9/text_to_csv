@@ -1,0 +1,94 @@
+Name: John   Age:  23  City: Bangkok
+name=anna, age=21, city=chiang mai
+JOHN,24,Bangkok
+Peter | 22 | Phuket
+  Sara   25    Bangkok
+mike-23-bkk
+LISA; 21 ; CHIANGMAI
+Tom, , 24, Pattaya
+  Emma  20Bangkok
+Noah|25|Phuket
+oliver:23:Bangkok
+Sophia  22  ChiangMai
+Ava,,21,,Bangkok
+liam| 24 | BKK
+Mia - 23 - Phuket
+James 24Bangkok
+   Lucas , 22 , Chiangmai
+Isabella|21|Bangkok
+Ethan:25:Phuket
+Mason 23 Bangkok
+Logan,24,  Pattaya
+Aria | 22 | BKK
+Grace 21 Chiangmai
+Henry  23   Bangkok
+Amelia-22-Phuket
+Benjamin:24:Bangkok
+Charlotte 21Bangkok
+Daniel|23|ChiangMai
+Harper , 22 , Phuket
+Jack 25 Bangkok
+Luna:21:BKK
+Sebastian 24 Chiangmai
+Ella 23 Bangkok
+David|22|Phuket
+Scarlett 21Bangkok
+Joseph-24-BKK
+Aiden:23:Chiangmai
+Chloe 22 Bangkok
+Matthew 25 Phuket
+Victoria|21|Bangkok
+Samuel 23  BKK
+Zoe , 22 , Chiangmai
+Andrew:24:Bangkok
+Natalie 21Phuket
+Ryan|23|Bangkok
+Hannah 22 ChiangMai
+Christian 24 Bangkok
+Lily 21 Phuket
+Nathan:23:BKK
+Sofia 22Bangkok
+Aaron|25|Chiangmai
+Ellie 21 Bangkok
+Isaac 24 Phuket
+Aubrey:22:BKK
+Connor 23Bangkok
+Penelope|21|ChiangMai
+Eli 25 Phuket
+Stella 22 Bangkok
+Jonathan:23:BKK
+Addison 21 Chiangmai
+Luke|24|Bangkok
+Aurora 22Phuket
+Jordan 23 Bangkok
+Levi:25:BKK
+Bella 21 ChiangMai
+Hunter|22|Phuket
+Layla 24 Bangkok
+Gabriel:23:BKK
+Riley 21Chiangmai
+Dylan|22|Bangkok
+Zoey 25 Phuket
+Anthony 24 Bangkok
+Nora:21:BKK
+Isaiah|23|ChiangMai
+Savannah 22 Phuket
+Charles 24Bangkok
+Lillian 21 BKK
+Thomas|23|Chiangmai
+Brooklyn 22 Phuket
+Christopher 25 Bangkok
+Claire:21:BKK
+Josiah|24|ChiangMai
+Paisley 22 Bangkok
+Hudson 23 Phuket
+Violet 21BKK
+Ezra|22|Chiangmai
+Caroline 24 Bangkok
+Colton:23:Phuket
+Kennedy 21 BKK
+Miles|25|ChiangMai
+Skylar 22 Bangkok
+Adam 24Phuket
+Piper:21:BKK
+Jaxon|23|ChiangMai
